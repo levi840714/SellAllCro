@@ -26,6 +26,10 @@ func milliTimestamp() int64 {
 
 func sortMapAndSplice(_m map[string]interface{}) string {
 	var paramStr string
+
+	if len(_m) == 0 {
+		return ""
+	}
 	keys := make([]string, 0, len(_m))
 
 	for field := range _m {
