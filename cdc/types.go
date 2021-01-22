@@ -70,4 +70,41 @@ type (
 			} `json:"order_info"`
 		} `json:"result"`
 	}
+
+	Heartbeat struct {
+		Id     int64  `json:"id"`
+		Method string `json:"method"`
+		Code   int64  `json:"code"`
+	}
+
+	ReplyHeartbeat struct {
+		Id     int64  `json:"id"`
+		Method string `json:"method"`
+	}
+
+	SubscribeChannel struct {
+		Method string `json:"method"`
+		Result struct {
+			InstrumentName string `json:"instrument_name"`
+			Subscription   string `json:"subscription"`
+			Channel        string `json:"channel"`
+			Data           []struct {
+				Status             string          `json:"status"`
+				Side               string          `json:"side"`
+				Price              decimal.Decimal `json:"price"`
+				Quantity           decimal.Decimal `json:"quantity"`
+				OrderID            string          `json:"order_id"`
+				ClientOid          string          `json:"client_oid"`
+				CreateTime         int64           `json:"create_time"`
+				UpdateTime         int64           `json:"update_time"`
+				Type               string          `json:"type"`
+				InstrumentName     string          `json:"instrument_name"`
+				CumulativeQuantity decimal.Decimal `json:"cumulative_quantity"`
+				CumulativeValue    decimal.Decimal `json:"cumulative_value"`
+				AvgPrice           decimal.Decimal `json:"avg_price"`
+				FeeCurrency        string          `json:"fee_currency"`
+				TimeInForce        string          `json:"time_in_force"`
+			} `json:"data"`
+		} `json:"result"`
+	}
 )
