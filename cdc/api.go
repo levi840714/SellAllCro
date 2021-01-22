@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"github.com/shopspring/decimal"
+	"log"
 	"net/http"
 )
 
@@ -30,7 +31,7 @@ func CdcClient(method string, params map[string]interface{}, reqMethod string) *
 	return r
 }
 
-func GetBalance() (balance decimal.Decimal, err error) {
+func GetCroBalance() (balance decimal.Decimal, err error) {
 	var result BalanceResp
 	params := map[string]interface{}{
 		"currency": "CRO",
@@ -47,17 +48,18 @@ func GetBalance() (balance decimal.Decimal, err error) {
 	}
 
 	balance = result.Result.Accounts[0].Available
+	log.Printf("Get CRO balance %v", balance)
 	return
 }
 
-func CreateOrder() (orderId string, err error) {
+func CreateOrder(croBalance decimal.Decimal) (orderId string, err error) {
 	var result CreateOrderResp
 	pair := "CRO_" + config.Config.ToCoin
 	params := map[string]interface{}{
 		"instrument_name": pair,
 		"side":            "SELL",
 		"type":            "MARKET",
-		"quantity":        1,
+		"quantity":        croBalance,
 	}
 	req := CdcClient("private/create-order", params, http.MethodPost)
 	jsonByte, err := getResponseJson(req)
@@ -71,6 +73,7 @@ func CreateOrder() (orderId string, err error) {
 	}
 
 	orderId = result.Result.OrderID
+	log.Printf("Create order success, order id: %s", orderId)
 	return
 }
 
