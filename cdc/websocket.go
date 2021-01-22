@@ -14,11 +14,19 @@ const (
 )
 
 type WsClient struct {
-	Conn *websocket.Conn
+	Conn   *websocket.Conn
+	Method map[string]Action
 }
 
+type Action func([]byte)
+
 func NewWebsocket() *WsClient {
-	return &WsClient{}
+	ws := &WsClient{}
+	ws.Method = map[string]Action{
+		"public/heartbeat": ws.RespondHeartbeat,
+		"subscribe":        ws.ReceiveOrderChannel,
+	}
+	return ws
 }
 
 func (ws *WsClient) InitWebsocket() {
@@ -42,15 +50,13 @@ func (ws *WsClient) ListenMessage() {
 		var result interface{}
 
 		_, msg, _ := ws.Conn.ReadMessage()
-		fmt.Println(string(msg))
+		fmt.Println("msg: ", string(msg))
 		json.Unmarshal(msg, &result)
 
 		resultMap := result.(map[string]interface{})
-		switch resultMap["method"] {
-		case "public/heartbeat":
-			ws.RespondHeartbeat(msg)
-		case "subscribe":
-			ws.ReceiveOrderChannel(msg)
+		method := resultMap["method"].(string)
+		if actionFunc, ok := ws.Method[method]; ok {
+			actionFunc(msg)
 		}
 	}
 }
