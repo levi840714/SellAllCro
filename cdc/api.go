@@ -4,7 +4,6 @@ import (
 	"SellAllCro/config"
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"github.com/shopspring/decimal"
 	"net/http"
 )
@@ -23,9 +22,11 @@ func CdcClient(method string, params map[string]interface{}, reqMethod string) *
 	}
 	signStr := sign(req)
 	req.Sig = signStr
-	j, _ := json.Marshal(req)
-	r, _ := http.NewRequest(reqMethod, ProdUri+req.Method, bytes.NewBuffer(j))
+
+	jsonByte, _ := json.Marshal(req)
+	r, _ := http.NewRequest(reqMethod, ProdUri+req.Method, bytes.NewBuffer(jsonByte))
 	r.Header.Set("Content-Type", "application/json")
+
 	return r
 }
 
@@ -36,6 +37,9 @@ func GetBalance() (balance decimal.Decimal, err error) {
 	}
 	req := CdcClient("private/get-account-summary", params, http.MethodPost)
 	jsonByte, err := getResponseJson(req)
+	if err != nil {
+		return
+	}
 
 	err = json.Unmarshal(jsonByte, &result)
 	if err != nil {
@@ -43,11 +47,10 @@ func GetBalance() (balance decimal.Decimal, err error) {
 	}
 
 	balance = result.Result.Accounts[0].Available
-	fmt.Println(balance)
 	return
 }
 
-func CreateOrder() {
+func CreateOrder() (orderId string, err error) {
 	var result CreateOrderResp
 	pair := "CRO_" + config.Config.ToCoin
 	params := map[string]interface{}{
@@ -58,13 +61,17 @@ func CreateOrder() {
 	}
 	req := CdcClient("private/create-order", params, http.MethodPost)
 	jsonByte, err := getResponseJson(req)
+	if err != nil {
+		return
+	}
 
 	err = json.Unmarshal(jsonByte, &result)
 	if err != nil {
 		return
 	}
-	fmt.Println(err)
-	fmt.Printf("%+v", result)
+
+	orderId = result.Result.OrderID
+	return
 }
 
 func GetOrderDetail(orderId string) (result OrderDetail, err error) {
@@ -73,12 +80,14 @@ func GetOrderDetail(orderId string) (result OrderDetail, err error) {
 	}
 	req := CdcClient("private/get-order-detail", params, http.MethodPost)
 	jsonByte, err := getResponseJson(req)
+	if err != nil {
+		return
+	}
 
 	err = json.Unmarshal(jsonByte, &result)
 	if err != nil {
 		return
 	}
-	fmt.Println(err)
-	fmt.Printf("%+v", result)
+
 	return
 }
