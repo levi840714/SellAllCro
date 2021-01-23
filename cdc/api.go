@@ -51,7 +51,7 @@ func GetCroBalance() (balance decimal.Decimal, err error) {
 	balance = result.Result.Accounts[0].Available
 	log.Printf("Get CRO balance %v", balance)
 
-	if balance == decimal.Zero {
+	if balance.Equal(decimal.Zero) {
 		return decimal.Zero, fmt.Errorf("Not enough CRO balance")
 	}
 
