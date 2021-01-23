@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/gorilla/websocket"
 	"log"
+	"time"
 )
 
 const (
@@ -105,6 +106,9 @@ func (ws *WsClient) SubscribeOrder() {
 
 	jsonByte, _ := json.Marshal(req)
 	ws.Conn.WriteMessage(websocket.TextMessage, jsonByte)
+
+	//make sure subscribe complete can receive order channel info
+	time.Sleep(time.Second * 30)
 }
 
 func (ws *WsClient) ReceiveOrderChannel(response []byte) {
@@ -117,4 +121,11 @@ func (ws *WsClient) ReceiveOrderChannel(response []byte) {
 			log.Printf("Sell %v CRO to %v %s success!!", data.CumulativeQuantity, data.CumulativeValue, config.Config.ToCoin)
 		}
 	}
+}
+
+func (ws *WsClient) Close() {
+	// TODO check already read all message before close connection is better
+	// enough buffer time to receive order info
+	time.Sleep(time.Minute * 10)
+	ws.Conn.Close()
 }
