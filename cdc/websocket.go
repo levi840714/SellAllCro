@@ -13,12 +13,12 @@ const (
 	wsMarketData = "wss://stream.crypto.com/v2/market"
 )
 
+type Action func([]byte)
+
 type WsClient struct {
 	Conn   *websocket.Conn
 	Method map[string]Action
 }
-
-type Action func([]byte)
 
 func NewWebsocket() *WsClient {
 	ws := &WsClient{}
@@ -49,7 +49,10 @@ func (ws *WsClient) ListenMessage() {
 	for {
 		var result interface{}
 
-		_, msg, _ := ws.Conn.ReadMessage()
+		_, msg, err := ws.Conn.ReadMessage()
+		if err != nil {
+			break
+		}
 		fmt.Println("msg: ", string(msg))
 		json.Unmarshal(msg, &result)
 
