@@ -4,6 +4,7 @@ import (
 	"SellAllCro/config"
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"github.com/shopspring/decimal"
 	"log"
 	"net/http"
@@ -49,6 +50,11 @@ func GetCroBalance() (balance decimal.Decimal, err error) {
 
 	balance = result.Result.Accounts[0].Available
 	log.Printf("Get CRO balance %v", balance)
+
+	if balance == decimal.Zero {
+		return decimal.Zero, fmt.Errorf("Not enough CRO balance")
+	}
+
 	return
 }
 
@@ -74,6 +80,7 @@ func CreateOrder(croBalance decimal.Decimal) (orderId string, err error) {
 
 	orderId = result.Result.OrderID
 	log.Printf("Create order success, order id: %s", orderId)
+	
 	return
 }
 
