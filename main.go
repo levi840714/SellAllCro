@@ -3,6 +3,7 @@ package main
 import (
 	"SellAllCro/cdc"
 	"SellAllCro/config"
+	"SellAllCro/telegram"
 	"log"
 	"time"
 )
@@ -11,6 +12,11 @@ func init() {
 	err := config.SetConfigFile("config.json")
 	if err != nil {
 		log.Fatalf("set config failed, err: %s", err)
+	}
+
+	// initial telegram bot, if you want notify to telegram
+	if config.Config.TgBotToken != "" && config.Config.TgChannelID != 0 {
+		telegram.Init()
 	}
 }
 

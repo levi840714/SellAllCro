@@ -1,5 +1,7 @@
 {
   "api_key": "",
   "secret_key": "",
-  "to_coin": "BTC"
+  "to_coin": "BTC",
+  "tg_bot_token": "",
+  "tg_channel_id": 0
 }

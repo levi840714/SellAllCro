@@ -9,9 +9,11 @@ import (
 var Config *AppConfig = nil
 
 type AppConfig struct {
-	ApiKey    string `json:"api_key"`
-	SecretKey string `json:"secret_key"`
-	ToCoin    string `json:"to_coin"`
+	ApiKey      string `json:"api_key"`
+	SecretKey   string `json:"secret_key"`
+	ToCoin      string `json:"to_coin"`
+	TgBotToken  string `json:"tg_bot_token"`
+	TgChannelID int64  `json:"tg_channel_id"`
 }
 
 func SetConfigFile(file string) (err error) {

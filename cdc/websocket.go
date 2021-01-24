@@ -2,6 +2,7 @@ package cdc
 
 import (
 	"SellAllCro/config"
+	"SellAllCro/telegram"
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/websocket"
@@ -27,6 +28,7 @@ func NewWebsocket() *WsClient {
 		"public/heartbeat": ws.RespondHeartbeat,
 		"subscribe":        ws.ReceiveOrderChannel,
 	}
+
 	return ws
 }
 
@@ -118,7 +120,9 @@ func (ws *WsClient) ReceiveOrderChannel(response []byte) {
 	orderData := order.Result.Data
 	for _, data := range orderData {
 		if data.Status == "FILLED" {
-			log.Printf("Sell %v CRO to %v %s success!!", data.CumulativeQuantity, data.CumulativeValue, config.Config.ToCoin)
+			msg := fmt.Sprintf("Sell %v CRO to %v %s success!!", data.CumulativeQuantity, data.CumulativeValue, config.Config.ToCoin)
+			log.Println(msg)
+			telegram.Send(msg)
 		}
 	}
 }
