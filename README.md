@@ -1,4 +1,5 @@
 # SellAllCro
+### 🤡🤡useless project, cause CRO is valuable coin, clown is me🤡🤡
 Sell all CRO to valuable coin automatically on crypto.com exchange
 
 Please copy the `config.json.example` to `config.json` file and set the config data
